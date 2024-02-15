@@ -17,6 +17,7 @@ public struct LineView: View {
     @State var IndicatorPointPosition: CGPoint = .zero
     
     @State var pathPoints = [CGPoint]()
+    @State var pathProgress = 0.0
     
     public var gradient: LinearGradient
     
@@ -45,7 +46,14 @@ public struct LineView: View {
                          lineWidth: lineChartParameters.lineWidth,
                          pathPoints: $pathPoints,
                          pathTimestamps: lineChartParameters.dataTimestamps)
+                    .trim(from: 0.0, to: pathProgress)
                     .stroke(gradient, lineWidth: lineChartParameters.lineWidth)
+                    .animation(.easeInOut(duration: 1.5), value: pathProgress)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            pathProgress = 1.0
+                        }
+                    }
             }
             
             if showingIndicators {
@@ -71,6 +79,7 @@ public struct LineView: View {
                 })
                 // Hide indicator when finish
                 .onEnded({ value in
+                    self.indexPosition = lineChartParameters.dataValues.count - 1
                     self.currentPreviousPoint = nil
                     self.showingIndicators = false
                 })

@@ -10,6 +10,7 @@ import SwiftUI
 public struct LineChartView: View {
     public var lineChartParameters: LineChartParameters
     
+    @State var showLabels = false
     @State var showingIndicators = false
     @State var indexPosition = Int()
     
@@ -22,7 +23,8 @@ public struct LineChartView: View {
             VStack {
                 if lineChartParameters.dragGesture {
                     ChartLabels(lineChartParameters: lineChartParameters, indexPosition: $indexPosition)
-                        .opacity(showingIndicators ? 1: 0)
+                        .opacity(showLabels ? 1: 0)
+                        .animation(.easeInOut, value: showLabels)
                 }
                 
                 LineView(
@@ -30,9 +32,17 @@ public struct LineChartView: View {
                     showingIndicators: $showingIndicators,
                     indexPosition: $indexPosition
                 )
-                    .padding(.top, 10)
+                .padding(.top, 10)
             }
             .padding()
+            .onAppear {
+                indexPosition = lineChartParameters.dataValues.count - 1
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation {
+                        showLabels = true
+                    }
+                }
+            }
         }
     }
 }

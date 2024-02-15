@@ -29,7 +29,6 @@ public struct ChartLabels: View {
     }
     
     public var body: some View {
-        
         HStack {
             
             if lineChartParameters.labelsAlignment == .right {
